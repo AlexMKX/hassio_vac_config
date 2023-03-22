@@ -1,0 +1,65 @@
+vacuum:
+  - platform: template
+    vacuums:
+{% for key, val in config.items() %}
+      {{key}}:
+        friendly_name: {{val.name}}
+        value_template: '{% raw %}{{{% endraw %} "cleaning" if state_attr("script.{{key}}","current")>0  else "docked"{% raw %}}}{% endraw %}'
+        start:
+            service: script.{{key}}
+        stop:
+            service: vacuum.return_to_base
+            data: {}
+            target:
+              entity_id: {{val.vac}}
+        return_to_base:
+            service: vacuum.return_to_base
+            data: {}
+            target:
+              entity_id: {{val.vac}}
+{% endfor %}
+script:
+{% for key, val in config.items() %}
+      {{key}}:
+        sequence:
+            - if:
+                  - condition: not
+                    conditions:
+                        - condition: state
+                          entity_id: {{ val.vac }}
+                          state: docked
+              then:
+                  - wait_for_trigger:
+                        - platform: state
+                          entity_id:
+                              - {{val.vac}}
+                          to: docked
+                          for:
+                              hours: 0
+                              minutes: 1
+                              seconds: 0
+                    timeout:
+                        hours: 1
+                        minutes: 0
+                        seconds: 0
+                        milliseconds: 0
+                    continue_on_timeout: false
+            - service: vacuum.set_fan_speed
+              data:
+                  fan_speed: silent
+              target:
+                  entity_id: {{ val.vac }}
+            - service: xiaomi_miot.send_command
+              data:
+                  entity_id: {{ val.vac }}
+                  method: app_zoned_clean
+                  params:
+                      - {{val.zone}}
+            - wait_template: '{% raw %}{{{% endraw %} states("{{val.vac}}")=="cleaning" {% raw %}}}{% endraw %}'
+              continue_on_timeout: false
+              timeout: "00:05:00"
+            - wait_template: '{% raw %}{{{% endraw %} states("{{val.vac}}")!="cleaning" {% raw %}}}{% endraw %}'
+              continue_on_timeout: true
+              timeout: "01:00:00"
+        mode: single
+{% endfor %}

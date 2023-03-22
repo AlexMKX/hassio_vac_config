@@ -1,0 +1,25 @@
+kitchen_clean:
+  vac: vacuum.roborock_a15_a5ce_robot_cleaner
+  zone: [ 16514, 23173, 21371, 26402 ]
+  fan: silent
+  name: "f1_kitchen_clean"
+sofa_clean:
+  vac: vacuum.roborock_a15_a5ce_robot_cleaner
+  zone: [ 15021,27721,18597,31085 ]
+  fan: silent
+  name: "f1_gost_sofa_clean"
+shower_room_clean:
+  vac: vacuum.roborock_a15_a5ce_robot_cleaner
+  zone: [ 23731, 23094, 26256, 27836 ]
+  fan: silent
+  name: "f1_showerroom_clean"
+hallway_clean:
+  vac: vacuum.roborock_a15_a5ce_robot_cleaner
+  zone: [ 21665,  22829,  23766,  27677 ]
+  fan: silent
+  name: "f1_hallway_clean"
+gost_clean:
+  vac: vacuum.roborock_a15_a5ce_robot_cleaner
+  zone: [ 14725, 27648,        21912,        34880 ]
+  fan: silent
+  name: "f1_gost_clean"
